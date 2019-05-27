@@ -1,12 +1,12 @@
 import bullet as b
 import random
+import csv
 
 class Roll:
     
-    def __init__(self, name: str, wins: list=[], loses: list=[]):
+    def __init__(self, name: str, wins: list=[]):
         self.name = name
         self.wins = wins
-        self.loses = loses
 
     def check_win(self, opposing_roll) -> bool:
         if opposing_roll.name == self.name:
@@ -19,13 +19,36 @@ class Player:
         self.name = name
         self.roll = None
         self.score = 0
+
+def read_rolls(filename:str='data/battle-table.csv'):
+
+    rolls = {}
+    with open(filename) as fin:
+        reader = csv.DictReader(fin)
+        for row in reader:
+            roll = get_roll(row)
+            rolls[roll.name] = roll
     
+    return rolls
+
+def get_roll(row: dict):
+    name = row['Attacker']
+    del row['Attacker']
+    del row[name]
+
+    roll = Roll(name)
+    for k in row.keys():
+        can_defeat = row[k].strip().lower() == 'win'
+        if can_defeat:
+            roll.wins.append(k)
+    
+    return roll
 
 def setup_rolls():
     rolls = {
-        'Rock': Roll('Rock', wins=['Scissors'], loses=['Paper']),
-        'Paper': Roll('Paper', wins=['Rock'], loses=['Scissors']),
-        'Scissors': Roll('Scissors', wins=['Paper'], loses=['Rock']),
+        'Rock': Roll('Rock', wins=['Scissors']),
+        'Paper': Roll('Paper', wins=['Rock']),
+        'Scissors': Roll('Scissors', wins=['Paper']),
     }
     return rolls
 
@@ -35,7 +58,7 @@ def main():
    end_game()
 
 def game_loop():
-    rolls = setup_rolls()
+    rolls = read_rolls()
 
     cli = b.Input('What is your name? ')
     p1 = Player(cli.launch())
@@ -44,7 +67,7 @@ def game_loop():
     print(f'Welcome to Rock Paper Scissors, {p1.name}')
 
     while True:
-        cli = b.Bullet(prompt='Choose your roll: ', choices=list(rolls.keys()))
+        cli = b.ScrollBar(prompt='Choose your roll: ', choices=list(rolls.keys()), height=10)
         p2.roll = random.choice(list(rolls.values()))
         p1_choice = cli.launch()
         print(p1_choice)
