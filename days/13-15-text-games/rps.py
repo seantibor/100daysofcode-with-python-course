@@ -39,9 +39,6 @@ def get_roll(row: dict):
     roll = Roll(name)
     roll.wins = [k for k, outcome in row.items() if outcome.lower().strip() == 'win']
 
-    print(roll.name, roll.wins)
-    
-    #print(roll.wins)
     
     return roll
 
