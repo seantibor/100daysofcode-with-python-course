@@ -37,10 +37,11 @@ def get_roll(row: dict):
     del row[name]
 
     roll = Roll(name)
-    for k in row.keys():
-        can_defeat = row[k].strip().lower() == 'win'
-        if can_defeat:
-            roll.wins.append(k)
+    roll.wins = [k for k, outcome in row.items() if outcome.lower().strip() == 'win']
+
+    print(roll.name, roll.wins)
+    
+    #print(roll.wins)
     
     return roll
 
