@@ -7,6 +7,8 @@ verify_ssl = true
 
 [packages]
 bullet = "*"
+jupyter = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"
